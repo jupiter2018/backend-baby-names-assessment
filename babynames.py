@@ -13,6 +13,7 @@
 import sys
 import re
 import argparse
+import os
 
 """
 Define the extract_names() function below and change main()
@@ -46,7 +47,33 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
     # +++your code here+++
-    return
+    if not os.path.isfile(filename):
+        print('This file does not exist. Try again')
+        sys.exit(1)
+    infolist = []
+    namesdict = {}
+    with open(filename,'r') as f:
+        
+        for line in f:
+            #print(line)
+            searchyear = re.search('Popularity\sin\s(\d{4})',line)
+            #print('hello',searchobject)
+            if searchyear:
+                # print(searchyear.group(1))
+                infolist.append(searchyear.group(1))
+            searchnames = re.search('<tr align="right"><td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>',line)
+            if searchnames:
+                # print(searchnames.group(1))
+                # print(searchnames.group(2))
+                # print(searchnames.group(3))
+                namesdict[searchnames.group(2)]= searchnames.group(1)
+                namesdict[searchnames.group(3)]= searchnames.group(1)
+
+    for name in sorted(namesdict.keys()):
+        infolist.append(name+ ' '+ namesdict[name])
+    #print(infolist)
+    return infolist
+    
 
 
 def create_parser():
@@ -75,6 +102,16 @@ def main():
 
     # +++your code here+++
     # For each filename, get the names, then either print the text output
+    for file in file_list:
+        if(not file == 'files'):
+            mylist = extract_names(file)
+            text = '\n'.join(mylist) + '\n'
+            if(create_summary):
+                with open(file+'.summary','a') as filetowrite:
+                    filetowrite.write(text)
+            else:
+                print(text)
+
     # or write it to a summary file
 
 
